@@ -6,28 +6,29 @@ echo "Updating package index..."
 sudo apt-get update
 
 echo "Installing prerequisites..."
-sudo apt-get install -y ca-certificates curl gnupg
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
-echo "Creating directory for Docker apt keyring..."
-sudo install -m 0755 -d /etc/apt/keyrings
+echo "Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:"
 
-echo "Downloading Docker GPG key..."
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-echo "Setting permissions for Docker GPG key..."
-sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "Add the appropriate Kubernetes apt repository..."
 
-echo "Adding Docker apt repository..."
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-echo "Updating package index again for Docker repo..."
+echo "Updating package index..."
 sudo apt-get update
 
-echo "Installing Containerd packages..."
-sudo apt-get install -y containerd.io
+echo "Installing kubernetes components..."
+sudo apt-get install -y kubelet kubeadm kubectl
 
-echo "Docker installation complete. Verifying..."
-sudo containerd --version
+echo "Disable auto updates for components..."
+sudo apt-mark hold kubelet kubeadm kubectl
+
+echo "enable kubelet"
+sudo systemctl enable --now kubelet
+
+echo "Verifying installation..."
+kubectl version --client
+kubeadm version
+
