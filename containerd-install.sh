@@ -44,7 +44,7 @@ sysctl net.ipv4.ip_forward
 
 echo "Removing containerd config and reinitializing"
 sudo rm /etc/containerd/config.toml
-sudo containerd config default > /etc/containerd/config.toml
+sudo containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 
 sudo systemctl restart containerd
