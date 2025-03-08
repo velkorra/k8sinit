@@ -4,3 +4,9 @@ curl -fsSL https://raw.githubusercontent.com/velkorra/k8sinit/refs/heads/main/co
 
 ```
 
+```bash
+
+curl -fsSL https://raw.githubusercontent.com/velkorra/k8sinit/refs/heads/main/k8s-init.sh?token=GHSAT0AAAAAACX3OFI5P7ZKOAFGGL3JLMCIZ6MMO3Q | bash
+
+```
+
